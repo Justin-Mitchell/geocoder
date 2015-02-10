@@ -14,12 +14,6 @@ module Geocoder::Lookup
         end
         
         private
-        
-        def valid_response?(response)
-            json = parse_json(response.body)
-            status = json["STATUS"]["status"] if json
-            super(response) and ['SUCCESS'].include?(status)
-        end
     
         def results(query)
             return [] unless doc = fetch_data(query)
