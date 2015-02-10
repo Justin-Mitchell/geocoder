@@ -28,5 +28,11 @@ module Geocoder
 
   class ServiceUnavailable < Error
   end
+  
+  class InaccurateMatch < Error
+  end
+  
+  class UnknownMatch < Error
+  end
 
 end
