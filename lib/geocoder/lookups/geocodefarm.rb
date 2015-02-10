@@ -10,7 +10,7 @@ module Geocoder::Lookup
         end
         
         def query_url(query)
-            URI.encode("#{protocol}://www.geocode.farm/v3/forward/?addr=#{query.sanitized_text} US&country=us&lang=en&count=1")
+            URI.encode("#{protocol}://www.geocode.farm/v3/json/forward/?addr=#{query.sanitized_text} US&country=us&lang=en&count=1")
         end
         
         private
