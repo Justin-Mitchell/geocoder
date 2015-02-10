@@ -30,6 +30,7 @@ module Geocoder
         :bing,
         :geocoder_ca,
         :geocoder_us,
+        :geocodefarm,
         :yandex,
         :nominatim,
         :mapquest,
