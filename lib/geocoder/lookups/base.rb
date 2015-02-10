@@ -104,7 +104,7 @@ module Geocoder
         if proxy = configuration.send(proxy_name)
           proxy_url = !!(proxy =~ /^#{protocol}/) ? proxy : protocol + '://' + proxy
           begin
-            uri = URI.parse(proxy_url)
+            uri = URI.parse(URI.encode(proxy_url.strip))
           rescue URI::InvalidURIError
             raise ConfigurationError,
               "Error parsing #{protocol.upcase} proxy URL: '#{proxy_url}'"
