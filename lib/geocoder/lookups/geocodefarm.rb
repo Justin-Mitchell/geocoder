@@ -1,4 +1,3 @@
-require 'uri'
 require 'geocoder/lookups/base'
 require 'geocoder/results/geocodefarm'
 
@@ -10,10 +9,42 @@ module Geocoder::Lookup
         end
         
         def query_url(query)
-            URI.encode("#{protocol}://www.geocode.farm/v3/json/forward/?addr=#{query.sanitized_text} US&country=us&lang=en&count=1")
+            base_url(query) + direction(query) + url_query_string(query)
+        end
+        
+        def required_api_key_parts
+            ["key"]
         end
         
         private
+        
+        def direction(query)
+            if query.reverse_geocode?
+                direction = "reverse"
+            else
+                direction = "forward"
+            end
+        end
+        
+        def base_url(query)
+            url = "http://www.geocode.farm/v3/json/"
+            if !query.reverse_geocode?
+                if r = query.options[:region]
+                    url << "/#{r}"
+                end
+                # use the more forgiving 'unstructured' query format to allow special
+                # chars, newlines, brackets, typos.
+                url + "?addr=" + URI.escape(query.sanitized_text.strip) + "&"
+            else
+                url + "/#{URI.escape(query.sanitized_text.strip)}?"
+            end
+        end
+        
+        def query_url_params(query)
+          {
+            key: configuration.api_key
+          }.merge(super)
+        end
     
         def results(query)
             return [] unless doc = fetch_data(query)
