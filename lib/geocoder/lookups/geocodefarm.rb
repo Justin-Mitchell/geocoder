@@ -35,3 +35,5 @@ module Geocoder::Lookup
                 warn("Geocodefarm Geocoding API error: Unknown Match")
             end
         end
+    end
+end
