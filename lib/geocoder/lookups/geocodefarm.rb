@@ -17,18 +17,19 @@ module Geocoder::Lookup
     
         def results(query)
             return [] unless doc = fetch_data(query)
-            case doc['RESULTS']['accuracy']
-            when 'EXACT_MATCH'
-                return doc['RESULTS']
-            when 'HIGH_ACCURACY'
-                return doc['RESULTS']
-            when 'MEDIUM_ACCURACY'
-                raise_error(Geocoder::InaccurateMatch) ||
-                warn("Geocodefarm Geocoding API error: Inaccurate Match")
-            when 'UNKNOWN_ACCURACY'
-                raise_error(Geocoder::UnknownMatch) ||
-                warn("Geocodefarm Geocoding API error: Unknown Match")
+
+            doc = doc['geocoding_results']
+
+            if doc['STATUS']['status'] == 'SUCCESS'
+                return [doc]
+            elsif doc['STATUS']['status'] == 'FAILED, NO_RESULTS'
+                return []
+            elsif doc['STATUS']['access'] == "API_KEY_INVALID"
+                raise_error(Geocoder::InvalidApiKey) || warn("Invalid Geocodefarm API key.")
+            else
+                warn "Geocodefarm API Error - Access: #{doc['STATUS']['access']} | Status: #{doc['STATUS']['status']}"
             end
+            return []
         end
     end
 end
