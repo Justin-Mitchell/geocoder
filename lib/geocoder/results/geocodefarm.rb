@@ -46,6 +46,10 @@ module Geocoder::Result
     def route
       @data['RESULTS'][0]['ADDRESS']['street_name']
     end
+    
+    def street_name
+        route
+    end
 
     def street_number
       @data['RESULTS'][0]['ADDRESS']['street_number']
