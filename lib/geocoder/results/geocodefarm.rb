@@ -59,13 +59,5 @@ module Geocoder::Result
         @data['RESULTS'][0]['BOUNDARIES']
     end
     
-
-    response_attributes.each do |a|
-      unless method_defined?(a)
-        define_method a do
-          @data[a]
-        end
-      end
-    end
   end
 end
