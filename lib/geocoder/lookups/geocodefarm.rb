@@ -9,14 +9,28 @@ module Geocoder::Lookup
         end
         
         def query_url(query)
-            base_url(query) + direction(query) + url_query_string(query)
+            base_url(query) + query_url_params
         end
         
         def required_api_key_parts
             ["key"]
         end
         
-        private
+        private #---------------------------------------
+        
+        def base_url(query)
+            url = "http://www.geocode.farm/v3/json/#{direction(query)}"
+            if !query.reverse_geocode?
+                if r = query.options[:region]
+                    url << "/#{r}"
+                end
+                # use the more forgiving 'unstructured' query format to allow special
+                # chars, newlines, brackets, typos.
+                url + "/?addr=" + URI.escape(query.sanitized_text.strip) + "&"
+            else
+                url + "/?addr=#{URI.escape(query.sanitized_text.strip)}?"
+            end
+        end
         
         def direction(query)
             if query.reverse_geocode?
@@ -26,24 +40,8 @@ module Geocoder::Lookup
             end
         end
         
-        def base_url(query)
-            url = "http://www.geocode.farm/v3/json/"
-            if !query.reverse_geocode?
-                if r = query.options[:region]
-                    url << "/#{r}"
-                end
-                # use the more forgiving 'unstructured' query format to allow special
-                # chars, newlines, brackets, typos.
-                url + "?addr=" + URI.escape(query.sanitized_text.strip) + "&"
-            else
-                url + "/#{URI.escape(query.sanitized_text.strip)}?"
-            end
-        end
-        
-        def query_url_params(query)
-          {
-            key: configuration.api_key
-          }.merge(super)
+        def query_url_params
+          "country=us&lang=en&count=1&key=#{configuration.api_key}"
         end
     
         def results(query)
